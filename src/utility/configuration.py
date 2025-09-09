@@ -6,7 +6,7 @@ from urllib.parse import urlparse
 from termcolor import colored
 
 from .logger import LoggerManager
-from .constants import proxy_host, proxy_port
+from src.config.constants import Constants
 
 """
 Configuration class
@@ -117,7 +117,7 @@ class Configuration:
         """
 
         if enable_proxy:
-            proxy_url = f"http://{proxy_host}:{proxy_port}"
+            proxy_url = f"http://{Constants.proxy_host}:{Constants.proxy_port}"
             return {
                 "http": proxy_url,
                 "https": proxy_url,

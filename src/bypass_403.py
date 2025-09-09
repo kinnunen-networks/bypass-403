@@ -8,11 +8,11 @@ from termcolor import colored
 from typing import List
 from threading import Semaphore
 
-from config.runtime_config import FuzzerRuntimeConfig
-from config.static_config import FuzzerStaticConfig
+from src.config.runtime_config import FuzzerRuntimeConfig
+from src.config.static_config import FuzzerStaticConfig
 
-from utility.logger import LoggerManager
-from utility.constants import TIMEOUT, MAX_RESULT, FILE, PROGRESS_LOG_INTERVAL
+from src.utility.logger import LoggerManager
+from src.config.constants import Constants
 
 
 class Fuzzer:
@@ -208,8 +208,6 @@ class Fuzzer:
 
         request_semaphore = Semaphore(max_workers)
 
-        all_results = []
-
         request_tasks = []
         for url in urls:
             for method in self._get_methods():
@@ -258,8 +256,8 @@ class Fuzzer:
                     with self.results_lock:
                         all_results.append(result)
 
-                    if len(all_results) >= MAX_RESULT:
-                        self.logger.warning(f"Result limit ({MAX_RESULT}) exceeded")
+                    if len(all_results) >= Constants.MAX_RESULT:
+                        self.logger.warning(f"Result limit ({Constants.MAX_RESULT}) exceeded")
                         # Cancel remaining futures
                         for remaining_future in future_to_request:
                             remaining_future.cancel()
@@ -306,7 +304,7 @@ class Fuzzer:
                         start_time,
                     )
 
-                    if current_request % PROGRESS_LOG_INTERVAL == 0:
+                    if current_request % Constants.PROGRESS_LOG_INTERVAL == 0:
                         self._log_global_timeout_remaining()
 
                     result = self._make_single_request(
@@ -315,8 +313,8 @@ class Fuzzer:
 
                     if result:
                         all_results.append(result)
-                    if len(all_results) >= MAX_RESULT:
-                        self.logger.warning(f"Result limit ({MAX_RESULT}) exceeded")
+                    if len(all_results) >= Constants.MAX_RESULT:
+                        self.logger.warning(f"Result limit ({Constants.MAX_RESULT}) exceeded")
                         return all_results
 
         return all_results
@@ -354,10 +352,10 @@ class Fuzzer:
         """
 
         try:
-            with open(FILE, "r", encoding="utf-8") as f:
+            with open(Constants.FILE, "r", encoding="utf-8") as f:
                 return [line.strip() for line in f if line.strip()]
         except FileNotFoundError:
-            self.logger.warning(f"{FILE} not found. Using default User-Agents.")
+            self.logger.warning(f"{Constants.FILE} not found. Using default User-Agents.")
             return [
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
                 "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
@@ -393,7 +391,7 @@ class Fuzzer:
                 verify=self.runtime_config.verify_ssl,
                 allow_redirects=True,
                 proxies=getattr(self.config, "proxy", None),
-                timeout=TIMEOUT,
+                timeout=Constants.TIMEOUT,
             )
 
             result = f"{url} ---> {response.status_code}, {method}, {headers}, {len(response.content)} bytes"
@@ -418,7 +416,7 @@ class Fuzzer:
             return result
 
         except requests.Timeout:
-            self.logger.warning(f"Timeout ({TIMEOUT}s) for {method} {url}")
+            self.logger.warning(f"Timeout ({Constants.TIMEOUT}s) for {method} {url}")
             return f"{url} ---> TIMEOUT, {method}, {{}}, 0 bytes"
 
         except requests.ConnectionError as e:
@@ -515,6 +513,10 @@ class Fuzzer:
         self.logger.info("FUZZER CONFIGURATION")
         self.logger.info("=" * 50)
 
+        # User-agent info
+        if self.user_agents:
+            self.logger.info(f"User agent file: {Constants.FILE}")
+
         # URL info
         if self.config.base_url:
             self.logger.info(f"Target URL: {self.config.base_url}")
@@ -592,8 +594,8 @@ class Fuzzer:
 
         # Other settings
         self.logger.info(f"SSL verification: {self.runtime_config.verify_ssl}")
-        self.logger.info(f"Request timeout: {TIMEOUT}s")
-        self.logger.info(f"Max results: {MAX_RESULT}")
+        self.logger.info(f"Request timeout: {Constants.TIMEOUT}s")
+        self.logger.info(f"Max results: {Constants.MAX_RESULT}")
 
         if self.runtime_config.filter_status_code:
             self.logger.info(

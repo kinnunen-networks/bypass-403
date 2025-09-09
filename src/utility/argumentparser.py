@@ -22,6 +22,9 @@ class ArgumentParser:
     def create_parser(self) -> argparse.ArgumentParser:
         """
         Configures the argument parser with expected arguments.
+
+        Returns:
+        - argparse.ArgumentParser: The configured argument parser
         """
 
         parser = argparse.ArgumentParser(
@@ -47,8 +50,8 @@ class ArgumentParser:
         parser.add_argument(
             "-pf",
             "--path_file",
-            default="fuzz-data/paths_to_bypass.txt",
             type=str,
+            default="fuzz-data/paths_to_bypass.txt",
             help="File containing the paths to test",
         )
 

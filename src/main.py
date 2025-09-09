@@ -2,12 +2,12 @@ import logging
 import sys
 import urllib3
 
-from config.runtime_config import FuzzerRuntimeConfig
-from config.static_config import FuzzerStaticConfig
+from src.config.runtime_config import FuzzerRuntimeConfig
+from src.config.static_config import FuzzerStaticConfig
 
-from utility.parse_arguments import ArgumentParser
-from utility.logger import LoggerManager
-from utility.configuration import Configuration
+from src.utility.argumentparser import ArgumentParser
+from src.utility.logger import LoggerManager
+from src.utility.configuration import Configuration
 
 from src.bypass_403 import Fuzzer
 
@@ -34,7 +34,7 @@ class App:
             domain=args.domain,
             url_file=args.url_file,
             method_file=args.method_file,
-            path_file=args.file,
+            path_file=args.path_file,
             header_file=args.header_file,
         )
         config = FuzzerStaticConfig.build_fuzzer_config(configuration, args.header)

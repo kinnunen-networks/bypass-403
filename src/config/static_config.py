@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import List, Dict, Optional, Callable, Iterable, Union
 
-from utility.configuration import Configuration
+from src.utility.configuration import Configuration
 
 """
 Static configuration
