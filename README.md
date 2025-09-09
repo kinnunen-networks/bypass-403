@@ -11,7 +11,7 @@ A flexible HTTP fuzzing tool for testing 403 restriction bypasses and analyzing 
 
 
 ## Requirements
-- Python 3.7+
+- Python 3.10+
 - Go version 1.23.4+ (for recon automation)
 
 ## Url variation techniques
@@ -48,6 +48,16 @@ Example output:
 Installation: 
 ```bash
 ./install/install.sh
+```
+### Docker
+
+Build image
+```bash
+$ docker build -t bypass403 -f Dockerfile .
+```
+
+```bash
+$ sudo docker run --rm bypass403 -d https://example.com
 ```
 
 ## Usage 
