@@ -99,7 +99,7 @@ python3 -m src.main -l url_list.txt \
 
 Example output from a test on localhost:
 
-![img.png](scripts/img.png)
+![img.png](pictures/img.png)
 
 ### Command Line Options
 
